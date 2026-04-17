@@ -4,7 +4,7 @@
   "private": true,
   "description": "Demo project to test Dependabot version updates vs security updates behavior",
   "dependencies": {
-    "axios": "1.7.0",
+    "axios": "1.15.0",
     "lodash": "4.17.20"
   },
   "devDependencies": {
