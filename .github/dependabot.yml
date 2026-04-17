@@ -22,7 +22,7 @@ updates:
   #==========================================================================
   - package-ecosystem: npm
     directories:
-      - "/playground/*"
+      - playground/*
     schedule:
       interval: weekly
     ignore:
