@@ -1,27 +1,16 @@
 ##############################################################################
 # Dependabot Configuration Demo
 #
-# This file tests multiple Dependabot configuration scenarios, focusing on:
-#   1. exclude-paths works only for version updates, not for security updates
-#   2. ignore works for both version updates and security updates
-#   3. directories (plural) can be used as an allowlist for monitored paths
-#   4. the behavior differences across update-types
-#
-# Dependency version selection notes:
-#   - axios 1.7.0        → has known CVEs (SSRF + Header Injection), triggers a security update
-#   - lodash 4.17.20     → has a known CVE (Prototype Pollution), triggers a security update
-#   - node-fetch 2.6.1   → has a known CVE, triggers a security update
-#   - express 4.17.1     → older version, version updates will suggest upgrading
-#   - vue 3.3.0          → older version, version updates will suggest upgrading
-#   - moment 2.29.1      → has known CVEs and is deprecated
-#   - request 2.88.2     → deprecated
+# This configuration is intentionally minimal:
+#   1. Keep GitHub Actions updates enabled
+#   2. Ignore all Dependabot updates under /playground/*
 ##############################################################################
 
 version: 2
 
 updates:
   #==========================================================================
-  # Scenario 1: GitHub Actions — baseline test
+  # GitHub Actions updates
   #==========================================================================
   - package-ecosystem: github-actions
     directory: /
@@ -29,91 +18,14 @@ updates:
       interval: weekly
 
   #==========================================================================
-  # Scenario 2: npm (root) — exclude playground with exclude-paths
-  #
-  # Expected behavior:
-  #   ✅ Version Updates: dependencies in root/ and app/ receive version-update PRs
-  #   ✅ Version Updates: dependencies under playground/** do not receive version-update PRs
-  #   ❌ Security Updates: vulnerable dependencies under playground/** still receive security-fix PRs
-  #      because exclude-paths applies only to version updates
-  #   ✅ Version Updates: dependencies under vendor/** do not receive version-update PRs
+  # Ignore all updates for all manifests under /playground/*
   #==========================================================================
   - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-    # ⚠️ exclude-paths blocks VERSION UPDATES only, not SECURITY UPDATES
-    exclude-paths:
-      - "playground/**"
-      - "vendor/**"
-    labels:
-      - "dependencies"
-      - "scenario-2-exclude-paths"
-    open-pull-requests-limit: 10
-
-  #==========================================================================
-  # Scenario 3: npm (app/) — use directories (plural) as an allowlist
-  #
-  # This is another approach: specify only the directories to monitor,
-  # without needing exclusions.
-  # Note: this is a separate ecosystem entry and monitors only /app
-  #
-  # Expected behavior:
-  #   ✅ Version Updates: only dependencies in app/ receive update PRs
-  #   ⚠️ If Scenario 2 is also enabled, app/ may receive duplicate PRs
-  #      In real usage, only one approach should be kept
-  #==========================================================================
-  # - package-ecosystem: npm
-  #   directories:                    # Note the plural form: directories, not directory
-  #     - "/app"
-  #   schedule:
-  #     interval: weekly
-  #   labels:
-  #     - "dependencies"
-  #     - "scenario-3-directories"
-
-  #==========================================================================
-  # Scenario 4: npm (vendor/) — ignore updates by dependency name
-  #
-  # ignore works for both version updates and security updates.
-  # This is the only way to block security-update PRs.
-  #
-  # Expected behavior:
-  #   ✅ All updates for moment are ignored, including security fixes
-  #   ✅ Major updates for request are ignored, while minor/patch updates still apply
-  #==========================================================================
-  - package-ecosystem: npm
-    directory: /vendor/legacy
+    directories:
+      - "/playground/*"
     schedule:
       interval: weekly
     ignore:
-      # Ignore all updates for moment, including security updates
-      - dependency-name: "moment"
-      # Ignore only major version updates for request
-      - dependency-name: "request"
-        update-types:
-          - "version-update:semver-major"
+      - dependency-name: "*"         # Ignore all updates for all dependencies
     labels:
       - "dependencies"
-      - "scenario-4-ignore"
-
-  #==========================================================================
-  # Scenario 5: npm (playground/) — the correct way to block security updates with ignore
-  #
-  # If you really want to block security-update PRs in playground,
-  # you need both exclude-paths (to block version updates)
-  # and ignore (to block security updates).
-  #
-  # But note: ignore matches by dependency name, not by path.
-  # So if root uses the same dependency name, it will also be ignored.
-  #
-  # That is why the best practice is to avoid vulnerable old dependencies in playground.
-  #==========================================================================
-  # - package-ecosystem: npm
-  #   directory: /playground/frontend
-  #   schedule:
-  #     interval: weekly
-  #   ignore:
-  #     - dependency-name: "*"       # Ignore all updates for all dependencies
-  #   labels:
-  #     - "scenario-5-ignore-all"

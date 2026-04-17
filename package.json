@@ -4,6 +4,7 @@
   "private": true,
   "description": "Demo project to test Dependabot version updates vs security updates behavior",
   "dependencies": {
+    "@ghfs/cli": "^0.0.3",
     "axios": "1.7.0",
     "lodash": "4.17.20"
   },
