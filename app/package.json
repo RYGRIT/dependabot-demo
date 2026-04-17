@@ -1,0 +1,13 @@
+{
+  "name": "dependabot-demo-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Main app - should receive both version and security updates",
+  "dependencies": {
+    "axios": "1.7.0",
+    "node-fetch": "2.6.1"
+  },
+  "devDependencies": {
+    "webpack": "5.75.0"
+  }
+}

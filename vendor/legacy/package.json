@@ -1,0 +1,10 @@
+{
+  "name": "dependabot-demo-vendor-legacy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vendor legacy code - test ignore by dependency name",
+  "dependencies": {
+    "moment": "2.29.1",
+    "request": "2.88.2"
+  }
+}
